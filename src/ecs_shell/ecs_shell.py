@@ -2,6 +2,10 @@ import argparse
 import boto3
 import subprocess
 import sys
+import signal
+import logging
+from types import FrameType
+from typing import Optional
 from simple_term_menu import TerminalMenu
 from aws_functions import (
     get_aws_session,
@@ -11,6 +15,12 @@ from aws_functions import (
     get_ecs_services,
 )
 
+def signal_handler(sig: int, frame: Optional[FrameType]) -> None:
+    if sig == signal.SIGINT:
+        logging.info('SIGINT received, ignoring.....')
+    elif sig == signal.SIGTERM:
+        print('Caught SIGTERM! Exiting ...')
+        sys.exit(0)
 
 def execute_aws_ecs_exec_command(
     ecs_cluster: str, task: str, container_name: str, profile_name: str
@@ -100,6 +110,10 @@ def main():
 
 
 if __name__ == "__main__":
+    # Register signal handlers
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     # Get parameters
     parser = argparse.ArgumentParser(
         description="""
