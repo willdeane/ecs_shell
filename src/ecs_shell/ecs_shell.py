@@ -18,8 +18,8 @@ from aws_functions import (
 def signal_handler(sig: int, frame: Optional[FrameType]) -> None:
     if sig == signal.SIGINT:
         logging.info('SIGINT received, ignoring.....')
-    elif sig == signal.SIGTERM:
-        print('Caught SIGTERM! Exiting ...')
+    elif sig == signal.SIGQUIT :
+        print('Caught SIGQUIT ! Exiting ...')
         sys.exit(0)
 
 def execute_aws_ecs_exec_command(
@@ -112,7 +112,7 @@ def main():
 if __name__ == "__main__":
     # Register signal handlers
     signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGQUIT, signal_handler)
 
     # Get parameters
     parser = argparse.ArgumentParser(
